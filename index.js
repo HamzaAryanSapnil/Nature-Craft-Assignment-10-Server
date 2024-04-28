@@ -37,6 +37,11 @@ async function run() {
       console.log(result);
     });
 
+    app.post("/addCraftItem", async (req, res) => {
+      const craftItems = req.body;
+      const result = await artCollection.insertOne(craftItems);
+      res.send(result);
+    })
     //
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
