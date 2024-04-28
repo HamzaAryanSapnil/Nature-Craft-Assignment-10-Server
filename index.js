@@ -42,7 +42,16 @@ async function run() {
       const result = await artCollection.insertOne(craftItems);
       res.send(result);
     })
-    //
+
+
+    // read data, it will be crud oparation, we will use now read (r) from crud oparation
+    app.get("/myArtAndCraftList/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = {email: email}
+      const cursor =  artCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result)
+    })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
