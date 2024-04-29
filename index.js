@@ -91,8 +91,13 @@ async function run() {
 
 
 
-
-
+ // delete data, it will be a crud oparation, we weill use now delete (d) from crud oparaions
+    app.delete("/craftDelete/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await artCollection.deleteOne(query)
+      res.send(result);
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
