@@ -28,7 +28,7 @@ async function run() {
     const artCollection = client.db("artAndCraft").collection("art");
     const usersCollection = client.db("artAndCraft").collection("users");
 
-    // get users, it will be crud oparation. we will use create (c) from crud oparation
+    // post users, it will be crud oparation. we will use create (c) from crud oparation
     app.post("/users", async (req, res) => {
       const user = req.body;
       console.log(user);
@@ -52,6 +52,48 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result)
     })
+    // read single data
+    app.get("/craftDetails/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+    });
+    app.get("/craftUpdates/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const result = await artCollection.findOne(query)
+      res.send(result);
+    });
+
+    // update data, it will be a crud oparation, we weill use now updata (u) from crud oparaions
+
+    app.put("/craftUpdates/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const options = {upsert: true};
+      const updateCraft = req.body;
+      const updatedCraft = {
+        $set: {
+          photoUrl: updateCraft.photoUrl,
+          item_name: updateCraft.item_name,
+          sub_category: updateCraft.sub_category,
+          short_des: updateCraft.short_des,
+          price: updateCraft.price,
+          rating: updateCraft.rating,
+          customization_value: updateCraft.customization_value,
+          processing_time: updateCraft.processing_time,
+          stock_status: updateCraft.stock_status,
+        }
+      }
+
+      const result = await artCollection.updateOne(filter, updatedCraft, options);
+      res.send(result)
+    })
+
+
+
+
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
