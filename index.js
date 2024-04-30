@@ -27,7 +27,12 @@ async function run() {
 
     const artCollection = client.db("artAndCraft").collection("art");
     const usersCollection = client.db("artAndCraft").collection("users");
-    const sub_categoryCollection = client.db("artAndCraft").collection("sub_category");
+    const sub_categoryCollection = client
+      .db("artAndCraft")
+      .collection("sub_category");
+    const default_craftsCollection = client
+      .db("artAndCraft")
+      .collection("default_crafts");
 
     // post users, it will be crud oparation. we will use create (c) from crud oparation
     app.post("/users", async (req, res) => {
@@ -40,33 +45,46 @@ async function run() {
       const craftItems = req.body;
       const result = await artCollection.insertOne(craftItems);
       res.send(result);
-    })
-    
-
+    });
 
     // read data, it will be crud oparation, we will use now read (r) from crud oparation
     app.get("/myArtAndCraftList/:email", async (req, res) => {
       const email = req.params.email;
-      const query = {email: email}
-      const cursor =  artCollection.find(query);
+      const query = { email: email };
+      const cursor = artCollection.find(query);
       const result = await cursor.toArray();
-      res.send(result)
-    })
-
-    app.get("/subCategoriesLists", async (req, res) => {
-      const result = await sub_categoryCollection.find().toArray();
       res.send(result);
-    })
-    
+    });
+    app.get("/default_crafts", async (req, res) => {
+      const cursor = default_craftsCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    app.get("/subCategoriesLists/:sub_categories", async (req, res) => {
+      const sub_category = req.params.sub_categories;
+      const query = { sub_category: sub_category };
+      const cursor = artCollection.find(query);
+      const filter = default_craftsCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+    app.get("/allArtAndCraftItems", async (req, res) => {
+      const result = await artCollection.find().toArray();
+      res.send(result);
+    });
+
     // read single data
     app.get("/craftDetails/:id", async (req, res) => {
       const id = req.params.id;
-      console.log(id);
+      const query = { _id: new ObjectId(id) };
+      const result = await artCollection.findOne(query);
+      res.send(result);
     });
     app.get("/craftUpdates/:id", async (req, res) => {
       const id = req.params.id;
-      const query = {_id: new ObjectId(id)};
-      const result = await artCollection.findOne(query)
+      const query = { _id: new ObjectId(id) };
+      const result = await artCollection.findOne(query);
       res.send(result);
     });
 
@@ -74,8 +92,8 @@ async function run() {
 
     app.put("/craftUpdates/:id", async (req, res) => {
       const id = req.params.id;
-      const filter = {_id: new ObjectId(id)};
-      const options = {upsert: true};
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
       const updateCraft = req.body;
       const updatedCraft = {
         $set: {
@@ -88,22 +106,24 @@ async function run() {
           customization_value: updateCraft.customization_value,
           processing_time: updateCraft.processing_time,
           stock_status: updateCraft.stock_status,
-        }
-      }
+        },
+      };
 
-      const result = await artCollection.updateOne(filter, updatedCraft, options);
-      res.send(result)
-    })
+      const result = await artCollection.updateOne(
+        filter,
+        updatedCraft,
+        options
+      );
+      res.send(result);
+    });
 
-
-
- // delete data, it will be a crud oparation, we weill use now delete (d) from crud oparaions
+    // delete data, it will be a crud oparation, we weill use now delete (d) from crud oparaions
     app.delete("/craftDelete/:id", async (req, res) => {
       const id = req.params.id;
-      const query = {_id: new ObjectId(id)}
-      const result = await artCollection.deleteOne(query)
+      const query = { _id: new ObjectId(id) };
+      const result = await artCollection.deleteOne(query);
       res.send(result);
-    })
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
