@@ -61,12 +61,23 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/subCategoriesLists", async (req, res) => {
+      const cursor = sub_categoryCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
     app.get("/subCategoriesLists/:sub_categories", async (req, res) => {
       const sub_category = req.params.sub_categories;
       const query = { sub_category: sub_category };
-      const cursor = artCollection.find(query);
-      const filter = default_craftsCollection.find(query);
-      const result = await cursor.toArray();
+      const artCursor = artCollection.find(query);
+      const defaultCraftCursor = default_craftsCollection.find(query);
+      const defaultCraftArray = await defaultCraftCursor.toArray();
+      const artArray = await artCursor.toArray();
+      const [defaultCraftArrayResult, artArrayResult] = await Promise.all([
+        defaultCraftArray,
+        artArray,
+      ]);
+      const result = [...defaultCraftArrayResult, ...artArrayResult];
       res.send(result);
     });
     app.get("/allArtAndCraftItems", async (req, res) => {
