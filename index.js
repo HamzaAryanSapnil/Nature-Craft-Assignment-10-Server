@@ -27,6 +27,7 @@ async function run() {
 
     const artCollection = client.db("artAndCraft").collection("art");
     const usersCollection = client.db("artAndCraft").collection("users");
+    const sub_categoryCollection = client.db("artAndCraft").collection("users");
 
     // post users, it will be crud oparation. we will use create (c) from crud oparation
     app.post("/users", async (req, res) => {
@@ -51,6 +52,11 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result)
     })
+
+    app.get("/subCategoriesLists", async (req, res) => {
+      const result = 
+    })
+    
     // read single data
     app.get("/craftDetails/:id", async (req, res) => {
       const id = req.params.id;
