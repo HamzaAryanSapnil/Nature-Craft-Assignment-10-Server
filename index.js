@@ -27,15 +27,12 @@ async function run() {
 
     const artCollection = client.db("artAndCraft").collection("art");
     const usersCollection = client.db("artAndCraft").collection("users");
-    const sub_categoryCollection = client.db("artAndCraft").collection("users");
 
     // post users, it will be crud oparation. we will use create (c) from crud oparation
     app.post("/users", async (req, res) => {
       const user = req.body;
-      console.log(user);
       const result = await usersCollection.insertOne(user);
       res.send(result);
-      console.log(result);
     });
 
     app.post("/addCraftItem", async (req, res) => {
@@ -43,6 +40,7 @@ async function run() {
       const result = await artCollection.insertOne(craftItems);
       res.send(result);
     })
+    
 
 
     // read data, it will be crud oparation, we will use now read (r) from crud oparation
